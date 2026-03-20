@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout — HYPER Fashion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a; --white: #f5f3ee; --accent: #c8a96e;
+      --gray: #1a1a1a; --mid: #2a2a2a; --light-gray: #888;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; cursor: none; min-height: 100vh; }
+    .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+    .cursor-ring { width: 36px; height: 36px; border: 1px solid var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); opacity: 0.6; transition: all 0.15s; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; background: rgba(10,10,10,0.97); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a { color: var(--white); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta { background: var(--accent); color: var(--black); padding: 10px 24px; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; text-decoration: none; }
+
+    .checkout-wrapper {
+      display: grid; grid-template-columns: 1fr 420px;
+      min-height: 100vh; padding-top: 80px;
+    }
+
+    /* LEFT - FORM */
+    .checkout-form { padding: 60px; border-right: 1px solid var(--mid); }
+    .checkout-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem; letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .checkout-subtitle { color: var(--light-gray); font-size: 0.85rem; margin-bottom: 48px; }
+
+    .steps { display: flex; gap: 0; margin-bottom: 48px; }
+    .step {
+      flex: 1; text-align: center; padding: 14px;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      border-bottom: 2px solid var(--mid); color: var(--light-gray);
+      cursor: none; transition: all 0.3s;
+    }
+    .step.active { border-bottom-color: var(--accent); color: var(--accent); }
+    .step.done { border-bottom-color: var(--mid); color: var(--white); }
+
+    .form-section { display: none; animation: fadeIn 0.4s ease; }
+    .form-section.visible { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .form-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; margin-bottom: 30px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .form-heading .num {
+      width: 28px; height: 28px; background: var(--accent);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--black);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--light-gray); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: var(--gray); border: 1px solid var(--mid);
+      color: var(--white); padding: 14px 16px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      outline: none; transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group select option { background: var(--gray); }
+    .form-group input::placeholder { color: rgba(136,136,136,0.5); }
+
+    .payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+    .pay-method {
+      border: 1px solid var(--mid); padding: 16px 12px;
+      text-align: center; cursor: none; transition: all 0.3s;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .pay-method:hover, .pay-method.active { border-color: var(--accent); }
+    .pay-method .icon { font-size: 1.5rem; }
+    .pay-method span { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--light-gray); }
+
+    .card-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+
+    .form-actions { display: flex; gap: 16px; margin-top: 36px; align-items: center; }
+    .btn-next, .btn-place {
+      flex: 1; padding: 16px; background: var(--accent); color: var(--black);
+      border: none; font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 700; cursor: none; transition: all 0.3s;
+    }
+    .btn-next:hover, .btn-place:hover { background: var(--white); }
+    .btn-back {
+      padding: 16px 24px; background: none; border: 1px solid var(--mid);
+      color: var(--light-gray); font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+      cursor: none; transition: all 0.3s;
+    }
+    .btn-back:hover { border-color: var(--white); color: var(--white); }
+
+    /* SUCCESS */
+    .success-screen {
+      display: none; text-align: center; padding: 80px 40px;
+      animation: fadeIn 0.6s ease;
+    }
+    .success-icon { font-size: 4rem; margin-bottom: 24px; }
+    .success-screen h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--accent); margin-bottom: 12px; }
+    .success-screen p { color: var(--light-gray); line-height: 1.8; max-width: 400px; margin: 0 auto 32px; }
+    .order-number { background: var(--gray); padding: 16px 32px; display: inline-block; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 32px; }
+
+    /* RIGHT - ORDER SUMMARY */
+    .order-summary { padding: 60px 40px; background: var(--gray); }
+    .summary-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.1em; margin-bottom: 36px; }
+    .cart-items { margin-bottom: 36px; }
+    .cart-item { display: grid; grid-template-columns: 72px 1fr auto; gap: 16px; margin-bottom: 20px; align-items: center; }
+    .cart-img { width: 72px; height: 90px; object-fit: cover; }
+    .cart-item-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; margin-bottom: 4px; }
+    .cart-item-meta { font-size: 0.75rem; color: var(--light-gray); }
+    .cart-item-qty {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 8px;
+    }
+    .qty-btn {
+      width: 24px; height: 24px; background: var(--mid);
+      border: none; color: var(--white); cursor: none;
+      font-size: 1rem; display: flex; align-items: center; justify-content: center;
+    }
+    .cart-item-price { font-size: 0.9rem; color: var(--white); white-space: nowrap; }
+    .remove-btn { background: none; border: none; color: var(--light-gray); cursor: none; font-size: 0.75rem; margin-top: 6px; }
+    .remove-btn:hover { color: #e74c3c; }
+
+    .promo-row { display: flex; gap: 0; margin-bottom: 28px; }
+    .promo-input {
+      flex: 1; padding: 12px 16px; background: var(--mid);
+      border: 1px solid var(--mid); color: var(--white);
+      font-family: 'DM Sans', sans-serif; outline: none;
+    }
+    .promo-btn {
+      padding: 12px 20px; background: var(--accent); border: none;
+      color: var(--black); font-size: 0.75rem; letter-spacing: 0.15em;
+      text-transform: uppercase; font-weight: 700; cursor: none;
+    }
+
+    .summary-line { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem; color: var(--light-gray); }
+    .summary-line.total { color: var(--white); font-size: 1rem; font-weight: 500; padding-top: 16px; border-top: 1px solid var(--mid); margin-top: 8px; }
+    .summary-line .discount { color: #4caf50; }
+
+    .secure-badges { display: flex; gap: 20px; margin-top: 32px; justify-content: center; }
+    .badge-item { text-align: center; color: var(--light-gray); }
+    .badge-item .b-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .badge-item span { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; display: block; }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <nav>
+    <a href="index.html" class="nav-logo">HYPER</a>
+    <ul class="nav-links">
+      <li><a href="products.html">Collection</a></li>
+      <li><a href="checkout.html" style="color:var(--accent)">Cart</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="products.html" class="nav-cta">← Continue Shopping</a>
+  </nav>
+
+  <div class="checkout-wrapper">
+    <!-- LEFT -->
+    <div class="checkout-form">
+      <h1 class="checkout-title">CHECKOUT</h1>
+      <p class="checkout-subtitle">Complete your order in 3 easy steps</p>
+
+      <div class="steps">
+        <div class="step active" id="step1">01 · Contact</div>
+        <div class="step" id="step2">02 · Shipping</div>
+        <div class="step" id="step3">03 · Payment</div>
+      </div>
+
+      <!-- SECTION 1 -->
+      <div class="form-section visible" id="section1">
+        <h3 class="form-heading"><span class="num">1</span>Contact Information</h3>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="Ananya"/></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Sharma"/></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group"><label>Email Address</label><input type="email" placeholder="ananya@example.com"/></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+91 98765 43210"/></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-next" onclick="goToStep(2)">Continue to Shipping →</button>
+        </div>
+      </div>
+
+      <!-- SECTION 2 -->
+      <div class="form-section" id="section2">
+        <h3 class="form-heading"><span class="num">2</span>Shipping Address</h3>
+        <div class="form-row full">
+          <div class="form-group"><label>Street Address</label><input type="text" placeholder="42, Jubilee Hills"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>City</label><input type="text" placeholder="Hyderabad"/></div>
+          <div class="form-group"><label>State</label>
+            <select>
+              <option>Telangana</option><option>Maharashtra</option><option>Delhi</option><option>Karnataka</option><option>Tamil Nadu</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>PIN Code</label><input type="text" placeholder="500033"/></div>
+          <div class="form-group"><label>Country</label>
+            <select><option>India</option></select>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group"><label>Delivery Instructions (Optional)</label>
+            <textarea rows="3" placeholder="Leave with security, ring bell twice..."></textarea>
+          </div>
+        </div>
+        <div style="margin-bottom:24px">
+          <p style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--light-gray);margin-bottom:14px">Shipping Method</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--accent);cursor:none">
+              <input type="radio" name="ship" checked style="accent-color:var(--accent)"/>
+              <span style="flex:1">Standard (3-5 days)</span><span style="color:var(--accent)">FREE</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--mid);cursor:none">
+              <input type="radio" name="ship" style="accent-color:var(--accent)"/>
+              <span style="flex:1">Express (1-2 days)</span><span>₹299</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--mid);cursor:none">
+              <input type="radio" name="ship" style="accent-color:var(--accent)"/>
+              <span style="flex:1">Same Day (Today)</span><span>₹599</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(1)">← Back</button>
+          <button class="btn-next" onclick="goToStep(3)">Continue to Payment →</button>
+        </div>
+      </div>
+
+      <!-- SECTION 3 -->
+      <div class="form-section" id="section3">
+        <h3 class="form-heading"><span class="num">3</span>Payment Details</h3>
+        <div class="payment-methods">
+          <div class="pay-method active" onclick="selectPay(this)">
+            <div class="icon">💳</div><span>Card</span>
+          </div>
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="icon">📱</div><span>UPI</span>
+          </div>
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="icon">🏦</div><span>Net Banking</span>
+          </div>
+        </div>
+        <div id="cardFields">
+          <div class="form-row full">
+            <div class="form-group"><label>Cardholder Name</label><input type="text" placeholder="ANANYA SHARMA"/></div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group"><label>Card Number</label><input type="text" placeholder="1234  5678  9012  3456" maxlength="19"/></div>
+          </div>
+          <div class="card-row">
+            <div class="form-group"><label>Expiry</label><input type="text" placeholder="MM / YY"/></div>
+            <div class="form-group"><label>CVV</label><input type="text" placeholder="•••"/></div>
+            <div class="form-group"><label>Type</label>
+              <select><option>Visa</option><option>Mastercard</option><option>Amex</option><option>RuPay</option></select>
+            </div>
+          </div>
+        </div>
+        <label style="display:flex;align-items:center;gap:12px;margin-top:20px;font-size:0.85rem;color:var(--light-gray);cursor:none">
+          <input type="checkbox" style="accent-color:var(--accent)"/> Save this card for future orders
+        </label>
+        <div class="form-actions">
+          <button class="btn-back" onclick="goToStep(2)">← Back</button>
+          <button class="btn-place" onclick="placeOrder()">Place Order · ₹22,096</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">🎉</div>
+        <h2>ORDER CONFIRMED!</h2>
+        <div class="order-number">ORDER #HYP-2026-08741</div>
+        <p>Your order has been placed and is being processed. You will receive a confirmation email shortly with tracking details.</p>
+        <a href="products.html" style="display:inline-block;background:var(--accent);color:var(--black);padding:16px 40px;text-decoration:none;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:700">Continue Shopping</a>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="order-summary">
+      <h2 class="summary-title">ORDER SUMMARY</h2>
+      <div class="cart-items">
+        <div class="cart-item">
+          <img class="cart-img" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200&q=80" alt="Coat"/>
+          <div>
+            <p class="cart-item-name">Aura Oversized Coat</p>
+            <p class="cart-item-meta">Size: M · Color: Charcoal</p>
+            <div class="cart-item-qty">
+              <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
+              <span class="qty">1</span>
+              <button class="qty-btn" onclick="updateQty(this,1)">+</button>
+            </div>
+            <button class="remove-btn">Remove</button>
+          </div>
+          <span class="cart-item-price">₹8,999</span>
+        </div>
+        <div class="cart-item">
+          <img class="cart-img" src="https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=200&q=80" alt="Jacket"/>
+          <div>
+            <p class="cart-item-name">Edge Moto Jacket</p>
+            <p class="cart-item-meta">Size: L · Color: Black</p>
+            <div class="cart-item-qty">
+              <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
+              <span class="qty">1</span>
+              <button class="qty-btn" onclick="updateQty(this,1)">+</button>
+            </div>
+            <button class="remove-btn">Remove</button>
+          </div>
+          <span class="cart-item-price">₹6,299</span>
+        </div>
+        <div class="cart-item">
+          <img class="cart-img" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=200&q=80" alt="Sneakers"/>
+          <div>
+            <p class="cart-item-name">Phantom Lux Sneakers</p>
+            <p class="cart-item-meta">Size: 42 · Color: White</p>
+            <div class="cart-item-qty">
+              <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
+              <span class="qty">1</span>
+              <button class="qty-btn" onclick="updateQty(this,1)">+</button>
+            </div>
+            <button class="remove-btn">Remove</button>
+          </div>
+          <span class="cart-item-price">₹5,799</span>
+        </div>
+      </div>
+
+      <div class="promo-row">
+        <input class="promo-input" type="text" placeholder="Promo code e.g. HYPER20"/>
+        <button class="promo-btn">Apply</button>
+      </div>
+
+      <div class="summary-line"><span>Subtotal (3 items)</span><span>₹21,097</span></div>
+      <div class="summary-line"><span>Shipping</span><span style="color:#4caf50">FREE</span></div>
+      <div class="summary-line"><span>GST (18%)</span><span>₹999</span></div>
+      <div class="summary-line"><span class="discount">Promo (HYPER20)</span><span class="discount">−₹0</span></div>
+      <div class="summary-line total"><span>Total</span><span>₹22,096</span></div>
+
+      <div class="secure-badges">
+        <div class="badge-item"><div class="b-icon">🔒</div><span>SSL Secure</span></div>
+        <div class="badge-item"><div class="b-icon">↩️</div><span>30-Day Returns</span></div>
+        <div class="badge-item"><div class="b-icon">🚚</div><span>Fast Delivery</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 80);
+    });
+    function goToStep(n) {
+      for(let i=1;i<=3;i++) {
+        document.getElementById('section'+i).classList.remove('visible');
+        const s = document.getElementById('step'+i);
+        s.classList.remove('active','done');
+        if(i < n) s.classList.add('done');
+        else if(i === n) s.classList.add('active');
+      }
+      document.getElementById('section'+n).classList.add('visible');
+    }
+    function placeOrder() {
+      for(let i=1;i<=3;i++) document.getElementById('section'+i).classList.remove('visible');
+      document.getElementById('successScreen').style.display = 'block';
+      document.querySelectorAll('.step').forEach(s => { s.classList.remove('active'); s.classList.add('done'); });
+    }
+    function selectPay(el) {
+      document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('active'));
+      el.classList.add('active');
+    }
+    function updateQty(btn, delta) {
+      const span = btn.closest('.cart-item-qty').querySelector('.qty');
+      let q = parseInt(span.textContent) + delta;
+      if(q < 1) q = 1;
+      span.textContent = q;
+    }
+  </script>
+</body>
+</html>
