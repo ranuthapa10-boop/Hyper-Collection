@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — HYPER Fashion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a; --white: #f5f3ee; --accent: #c8a96e;
+      --gray: #1a1a1a; --mid: #2a2a2a; --light-gray: #888;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; cursor: none; }
+    .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+    .cursor-ring { width: 36px; height: 36px; border: 1px solid var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); opacity: 0.6; transition: all 0.15s; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; background: rgba(10,10,10,0.97); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a { color: var(--white); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta { background: var(--accent); color: var(--black); padding: 10px 24px; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; text-decoration: none; }
+
+    /* HERO */
+    .contact-hero {
+      height: 50vh; margin-top: 80px; position: relative;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      padding: 60px; text-align: center;
+      overflow: hidden;
+    }
+    .contact-hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1600&q=80') center/cover; }
+    .contact-hero-overlay { position: absolute; inset: 0; background: rgba(10,10,10,0.72); }
+    .contact-hero h1 { position: relative; z-index: 2; font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 8vw, 7rem); letter-spacing: 0.05em; }
+    .contact-hero p { position: relative; z-index: 2; color: rgba(245,243,238,0.65); font-size: 1rem; margin-top: 12px; max-width: 500px; }
+    .contact-hero span { color: var(--accent); font-style: italic; font-family: 'Playfair Display', serif; }
+
+    /* INFO CARDS */
+    .info-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+      background: var(--mid);
+    }
+    .info-card {
+      background: var(--gray); padding: 40px 32px;
+      text-align: center; transition: background 0.3s; cursor: none;
+    }
+    .info-card:hover { background: var(--mid); }
+    .info-icon { font-size: 2rem; margin-bottom: 16px; }
+    .info-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .info-main { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 6px; }
+    .info-sub { font-size: 0.8rem; color: var(--light-gray); line-height: 1.5; }
+
+    /* MAIN CONTENT */
+    .contact-body {
+      display: grid; grid-template-columns: 1fr 480px; gap: 0;
+      padding: 100px 60px; gap: 80px;
+    }
+
+    /* FORM */
+    .contact-form-wrap { }
+    .section-label { font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 4vw, 4rem); line-height: 1; margin-bottom: 40px; }
+
+    .topic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 32px; }
+    .topic-btn {
+      padding: 14px 10px; border: 1px solid var(--mid); background: none;
+      color: var(--light-gray); font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; letter-spacing: 0.1em; text-align: center;
+      cursor: none; transition: all 0.3s;
+    }
+    .topic-btn:hover, .topic-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(200,169,110,0.06); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--light-gray); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: var(--gray); border: 1px solid var(--mid); color: var(--white);
+      padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(136,136,136,0.5); }
+    .form-group textarea { resize: vertical; min-height: 160px; }
+    .char-count { font-size: 0.7rem; color: var(--light-gray); text-align: right; margin-top: 4px; }
+
+    .submit-row { display: flex; align-items: center; gap: 24px; margin-top: 24px; }
+    .submit-btn {
+      background: var(--accent); color: var(--black); padding: 16px 48px;
+      border: none; font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 700; cursor: none; transition: all 0.3s;
+    }
+    .submit-btn:hover { background: var(--white); }
+    .submit-note { font-size: 0.8rem; color: var(--light-gray); }
+
+    /* SUCCESS */
+    .contact-success { display: none; padding: 60px 0; animation: fadeIn 0.5s ease; }
+    .contact-success .icon { font-size: 3rem; margin-bottom: 16px; }
+    .contact-success h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--accent); margin-bottom: 12px; }
+    .contact-success p { color: var(--light-gray); max-width: 400px; line-height: 1.7; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+    /* SIDEBAR */
+    .contact-sidebar { }
+    .sidebar-card {
+      background: var(--gray); padding: 40px; margin-bottom: 2px;
+    }
+    .sidebar-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 16px; }
+    .sidebar-card p { font-size: 0.85rem; color: var(--light-gray); line-height: 1.7; }
+    .sidebar-card a { color: var(--accent); text-decoration: none; }
+    .hours-table { width: 100%; margin-top: 12px; }
+    .hours-table tr td { padding: 6px 0; font-size: 0.85rem; }
+    .hours-table tr td:last-child { color: var(--accent); text-align: right; }
+    .faq-item { margin-bottom: 16px; border-bottom: 1px solid var(--mid); padding-bottom: 16px; }
+    .faq-q { font-size: 0.85rem; font-weight: 500; cursor: none; display: flex; justify-content: space-between; align-items: center; }
+    .faq-a { font-size: 0.8rem; color: var(--light-gray); line-height: 1.6; margin-top: 10px; display: none; }
+    .faq-item.open .faq-a { display: block; }
+    .faq-item.open .faq-toggle { transform: rotate(180deg); }
+    .faq-toggle { transition: transform 0.3s; font-size: 0.9rem; color: var(--accent); }
+
+    /* MAP PLACEHOLDER */
+    .map-section { padding: 0 60px 100px; }
+    .map-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 0.05em; margin-bottom: 32px; }
+    .map-container {
+      height: 380px; background: var(--gray);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .map-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
+    .map-pin {
+      position: absolute; text-align: center;
+      font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.1em;
+    }
+    .map-pin .pin { font-size: 2.5rem; }
+    .map-pin p { color: var(--accent); font-size: 1rem; margin-top: 4px; }
+
+    /* SOCIAL */
+    .social-section { background: var(--accent); padding: 80px 60px; text-align: center; }
+    .social-section h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--black); margin-bottom: 8px; }
+    .social-section p { color: rgba(10,10,10,0.7); margin-bottom: 40px; }
+    .social-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .social-btn {
+      background: var(--black); color: var(--white); padding: 14px 32px;
+      text-decoration: none; font-size: 0.8rem; letter-spacing: 0.2em;
+      text-transform: uppercase; transition: all 0.3s;
+    }
+    .social-btn:hover { background: rgba(10,10,10,0.7); }
+
+    footer { background: #050505; padding: 40px 60px; text-align: center; border-top: 1px solid var(--mid); }
+    footer p { color: var(--light-gray); font-size: 0.85rem; }
+    footer a { color: var(--accent); text-decoration: none; margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">HYPER</a>
+    <ul class="nav-links">
+      <li><a href="products.html">Collection</a></li>
+      <li><a href="checkout.html">Cart</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="contact.html" style="color:var(--accent)">Contact</a></li>
+    </ul>
+    <a href="products.html" class="nav-cta">Shop Now</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="contact-hero">
+    <div class="contact-hero-bg"></div>
+    <div class="contact-hero-overlay"></div>
+    <h1>Get in <span>Touch</span></h1>
+    <p>We're here for styling advice, order help, or just a conversation about fashion.</p>
+  </div>
+
+  <!-- INFO STRIP -->
+  <div class="info-strip">
+    <div class="info-card">
+      <div class="info-icon">📍</div>
+      <p class="info-label">Studio</p>
+      <p class="info-main">Hyderabad, India</p>
+      <p class="info-sub">Jubilee Hills, Road 36<br/>Hyderabad — 500033</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">📞</div>
+      <p class="info-label">Phone</p>
+      <p class="info-main">+91 40 6699 8800</p>
+      <p class="info-sub">Mon–Sat<br/>10:00 AM – 8:00 PM IST</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">✉️</div>
+      <p class="info-label">Email</p>
+      <p class="info-main">hello@hyperfashion.in</p>
+      <p class="info-sub">Reply within 24 hours<br/>orders@hyperfashion.in</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">💬</div>
+      <p class="info-label">Live Chat</p>
+      <p class="info-main">Chat with us now</p>
+      <p class="info-sub">Average response<br/>under 5 minutes</p>
+    </div>
+  </div>
+
+  <!-- MAIN BODY -->
+  <div class="contact-body">
+    <!-- FORM -->
+    <div class="contact-form-wrap">
+      <p class="section-label">Send a Message</p>
+      <h2 class="section-title">WE'D LOVE<br>TO HEAR YOU</h2>
+
+      <div style="margin-bottom:28px">
+        <p style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--light-gray);margin-bottom:14px">What's this about?</p>
+        <div class="topic-grid">
+          <button class="topic-btn active" onclick="selectTopic(this)">Order Help</button>
+          <button class="topic-btn" onclick="selectTopic(this)">Returns</button>
+          <button class="topic-btn" onclick="selectTopic(this)">Styling Advice</button>
+          <button class="topic-btn" onclick="selectTopic(this)">Wholesale</button>
+          <button class="topic-btn" onclick="selectTopic(this)">Press / Media</button>
+          <button class="topic-btn" onclick="selectTopic(this)">General</button>
+        </div>
+      </div>
+
+      <div id="contactForm">
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="Ananya" id="cFirst"/></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Sharma"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email Address</label><input type="email" placeholder="ananya@example.com" id="cEmail"/></div>
+          <div class="form-group"><label>Phone (Optional)</label><input type="tel" placeholder="+91 98765 43210"/></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Order Number (if applicable)</label>
+            <input type="text" placeholder="HYP-2026-XXXXX"/>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group"><label>Subject</label><input type="text" placeholder="How can we help you?" id="cSubject"/></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="cMsg" placeholder="Write your message here..." oninput="updateCount()"></textarea>
+            <span class="char-count" id="charCount">0 / 1000</span>
+          </div>
+        </div>
+        <div class="form-row full" style="margin-bottom:0">
+          <label style="display:flex;align-items:flex-start;gap:12px;font-size:0.82rem;color:var(--light-gray);cursor:none">
+            <input type="checkbox" style="accent-color:var(--accent);margin-top:3px" checked/>
+            I agree to receive communications from Hyper Fashion regarding my query and occasional style updates. Unsubscribe anytime.
+          </label>
+        </div>
+        <div class="submit-row">
+          <button class="submit-btn" onclick="submitContact()">Send Message →</button>
+          <p class="submit-note">🔒 Your info is private & secure</p>
+        </div>
+      </div>
+
+      <div class="contact-success" id="contactSuccess">
+        <div class="icon">✉️</div>
+        <h3>MESSAGE SENT!</h3>
+        <p>Thank you for reaching out! Our team will respond within 24 hours. If this is urgent, call us at +91 40 6699 8800.</p>
+        <br/>
+        <a href="products.html" style="color:var(--accent);text-decoration:none;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase">← Back to Shopping</a>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="contact-sidebar">
+      <div class="sidebar-card">
+        <h3>Store Hours</h3>
+        <p>Visit our flagship studio in Hyderabad or shop online 24/7.</p>
+        <table class="hours-table">
+          <tr><td>Monday – Friday</td><td>10:00 – 20:00</td></tr>
+          <tr><td>Saturday</td><td>11:00 – 22:00</td></tr>
+          <tr><td>Sunday</td><td>12:00 – 18:00</td></tr>
+          <tr><td>Public Holidays</td><td>Closed</td></tr>
+        </table>
+      </div>
+      <div class="sidebar-card">
+        <h3>Frequently Asked</h3>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <p class="faq-q">How long does delivery take? <span class="faq-toggle">▾</span></p>
+          <p class="faq-a">Standard delivery takes 3–5 business days across India. Express (1–2 days) and Same Day options are also available at checkout for select cities.</p>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <p class="faq-q">What is the return policy? <span class="faq-toggle">▾</span></p>
+          <p class="faq-a">We accept returns within 30 days of delivery. Items must be unworn, unwashed with original tags. Sale items are final. Initiate a return from your account dashboard.</p>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <p class="faq-q">How do I find my size? <span class="faq-toggle">▾</span></p>
+          <p class="faq-a">Each product page includes a detailed size guide. We recommend measuring your chest, waist, and hips and comparing with our chart for the best fit.</p>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <p class="faq-q">Do you offer gift wrapping? <span class="faq-toggle">▾</span></p>
+          <p class="faq-a">Yes! Premium gift wrapping is available at checkout for ₹199. Includes a handwritten card and signature Hyper tissue paper.</p>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
+          <p class="faq-q">Are there wholesale options? <span class="faq-toggle">▾</span></p>
+          <p class="faq-a">Yes, we have a wholesale program for boutiques and multi-brand retailers. Contact us at <a href="#">wholesale@hyperfashion.in</a> for details.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-section">
+    <h2 class="map-title">FIND OUR STUDIO</h2>
+    <div class="map-container">
+      <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1400&q=60" alt="Map"/>
+      <div class="map-pin">
+        <div class="pin">📍</div>
+        <p>HYPER STUDIO<br/>Jubilee Hills, Hyderabad</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCIAL -->
+  <div class="social-section">
+    <h2>FOLLOW THE MOVEMENT</h2>
+    <p>Join 800K+ fashion lovers across our platforms</p>
+    <div class="social-grid">
+      <a href="#" class="social-btn">📸 Instagram</a>
+      <a href="#" class="social-btn">🎵 TikTok</a>
+      <a href="#" class="social-btn">📌 Pinterest</a>
+      <a href="#" class="social-btn">🐦 Twitter</a>
+      <a href="#" class="social-btn">▶️ YouTube</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Hyper Fashion &nbsp;|&nbsp; <a href="index.html">Home</a> <a href="products.html">Shop</a> <a href="reviews.html">Reviews</a></p>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 80);
+    });
+    function selectTopic(el) {
+      document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+    function toggleFaq(el) {
+      el.classList.toggle('open');
+    }
+    function updateCount() {
+      const len = document.getElementById('cMsg').value.length;
+      document.getElementById('charCount').textContent = len + ' / 1000';
+    }
+    function submitContact() {
+      const f = document.getElementById('cFirst').value;
+      const e = document.getElementById('cEmail').value;
+      const m = document.getElementById('cMsg').value;
+      if (!f || !e || !m) { alert('Please fill in your name, email, and message.'); return; }
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('contactSuccess').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
