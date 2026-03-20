@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HYPER — Fashion Redefined</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f3ee;
+      --accent: #c8a96e;
+      --accent2: #e74c3c;
+      --gray: #2a2a2a;
+      --light-gray: #888;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease;
+      opacity: 0.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 60px;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+      transition: background 0.3s;
+    }
+    nav.scrolled { background: rgba(10,10,10,0.97); }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      color: var(--white); text-decoration: none;
+      font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+      font-weight: 500;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; bottom: -4px;
+      width: 0; height: 1px; background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--accent); color: var(--black);
+      padding: 10px 24px; font-size: 0.75rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      font-weight: 700; border: none; cursor: none;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--white); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      height: 100vh; position: relative;
+      display: flex; align-items: flex-end;
+      padding: 80px 60px;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80') center/cover no-repeat;
+      transform: scale(1.05);
+      animation: heroZoom 12s ease-in-out infinite alternate;
+    }
+    @keyframes heroZoom { from { transform: scale(1.05); } to { transform: scale(1.12); } }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.3) 60%, transparent 100%);
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 680px; }
+    .hero-eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 20px; display: block;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 10vw, 9rem);
+      line-height: 0.9; letter-spacing: 0.02em;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .hero-title em { color: var(--accent); font-style: italic; font-family: 'Playfair Display', serif; }
+    .hero-sub {
+      font-size: 1rem; line-height: 1.7; color: rgba(245,243,238,0.7);
+      margin: 24px 0 40px; max-width: 420px;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .hero-btns { display: flex; gap: 16px; animation: fadeUp 0.8s 0.6s ease both; }
+    .btn-primary {
+      background: var(--accent); color: var(--black);
+      padding: 16px 40px; font-size: 0.8rem;
+      letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+      text-decoration: none; transition: all 0.3s;
+      border: 2px solid var(--accent);
+    }
+    .btn-primary:hover { background: transparent; color: var(--accent); }
+    .btn-ghost {
+      background: transparent; color: var(--white);
+      padding: 16px 40px; font-size: 0.8rem;
+      letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500;
+      text-decoration: none; border: 2px solid rgba(245,243,238,0.3);
+      transition: all 0.3s;
+    }
+    .btn-ghost:hover { border-color: var(--white); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* TICKER */
+    .ticker {
+      background: var(--accent); padding: 12px 0;
+      overflow: hidden; white-space: nowrap;
+    }
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 25s linear infinite;
+    }
+    .ticker-inner span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem; letter-spacing: 0.2em;
+      color: var(--black); padding: 0 40px;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* CATEGORIES */
+    .section { padding: 120px 60px; }
+    .section-label {
+      font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 5vw, 5rem);
+      line-height: 1; margin-bottom: 60px;
+    }
+    .categories-grid {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 4px;
+      height: 70vh;
+    }
+    .cat-card {
+      position: relative; overflow: hidden; cursor: none;
+    }
+    .cat-card img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .cat-card:hover img { transform: scale(1.08); }
+    .cat-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,10,10,0.8) 0%, transparent 60%);
+      display: flex; align-items: flex-end; padding: 32px;
+    }
+    .cat-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem; letter-spacing: 0.05em;
+    }
+    .cat-link {
+      display: block; width: 100%; height: 100%;
+      text-decoration: none; color: inherit;
+    }
+
+    /* FEATURED PRODUCTS */
+    .products-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+    }
+    .product-card {
+      position: relative; overflow: hidden; cursor: none;
+      background: var(--gray);
+    }
+    .product-img {
+      aspect-ratio: 3/4; overflow: hidden;
+    }
+    .product-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .product-card:hover .product-img img { transform: scale(1.05); }
+    .product-info { padding: 20px 20px 24px; }
+    .product-tag {
+      font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 6px;
+    }
+    .product-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; margin-bottom: 8px;
+    }
+    .product-price { font-size: 0.9rem; color: var(--light-gray); }
+    .product-price strong { color: var(--white); }
+    .add-btn {
+      position: absolute; bottom: 24px; right: 20px;
+      width: 40px; height: 40px;
+      background: var(--accent); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; font-size: 1.2rem;
+      transform: translateY(10px); opacity: 0;
+      transition: all 0.3s;
+    }
+    .product-card:hover .add-btn { opacity: 1; transform: translateY(0); }
+    .badge {
+      position: absolute; top: 16px; left: 16px;
+      background: var(--accent2); color: white;
+      font-size: 0.65rem; letter-spacing: 0.15em;
+      padding: 4px 10px; text-transform: uppercase; font-weight: 700;
+    }
+
+    /* BRAND STORY */
+    .brand-story {
+      background: var(--gray);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    }
+    .brand-img {
+      height: 80vh; overflow: hidden;
+    }
+    .brand-img img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .brand-text {
+      padding: 100px 80px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .brand-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      line-height: 1.3; font-style: italic;
+      margin: 24px 0 40px;
+      color: var(--white);
+    }
+    .brand-desc { color: rgba(245,243,238,0.6); line-height: 1.8; font-size: 0.95rem; }
+
+    /* NEWSLETTER */
+    .newsletter {
+      background: var(--accent);
+      padding: 100px 60px;
+      text-align: center;
+    }
+    .newsletter .section-title { color: var(--black); margin-bottom: 20px; }
+    .newsletter p { color: rgba(10,10,10,0.7); font-size: 1rem; margin-bottom: 40px; }
+    .nl-form { display: flex; gap: 0; max-width: 500px; margin: 0 auto; }
+    .nl-form input {
+      flex: 1; padding: 16px 24px;
+      border: 2px solid var(--black); background: transparent;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      outline: none; color: var(--black);
+    }
+    .nl-form input::placeholder { color: rgba(10,10,10,0.5); }
+    .nl-form button {
+      background: var(--black); color: var(--white);
+      padding: 16px 32px; border: 2px solid var(--black);
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      font-weight: 700; cursor: none; transition: all 0.3s;
+    }
+    .nl-form button:hover { background: var(--gray); }
+
+    /* FOOTER */
+    footer {
+      background: #050505;
+      padding: 80px 60px 40px;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px; margin-bottom: 60px;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem; color: var(--accent); letter-spacing: 0.15em;
+      margin-bottom: 20px;
+    }
+    .footer-desc { color: var(--light-gray); line-height: 1.7; font-size: 0.9rem; max-width: 280px; }
+    .footer-heading {
+      font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 24px;
+    }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a {
+      color: var(--light-gray); text-decoration: none; font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid var(--gray);
+      padding-top: 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-bottom p { font-size: 0.8rem; color: var(--light-gray); }
+    .social-links { display: flex; gap: 20px; }
+    .social-links a {
+      color: var(--light-gray); text-decoration: none;
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .social-links a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">HYPER</a>
+    <ul class="nav-links">
+      <li><a href="products.html">Collection</a></li>
+      <li><a href="checkout.html">Cart</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="products.html" class="nav-cta">Shop Now</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-eyebrow">SS 2026 Collection</span>
+      <h1 class="hero-title">WEAR<br>THE <em>Future</em></h1>
+      <p class="hero-sub">Hyper Fashion redefines the boundaries of style. Crafted for those who move fast, think sharp, and dress louder than words.</p>
+      <div class="hero-btns">
+        <a href="products.html" class="btn-primary">Explore Collection</a>
+        <a href="contact.html" class="btn-ghost">Our Story</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span>NEW ARRIVALS</span><span>•</span>
+      <span>FREE SHIPPING OVER ₹2999</span><span>•</span>
+      <span>SS2026 COLLECTION LIVE</span><span>•</span>
+      <span>HYPER REWARDS PROGRAM</span><span>•</span>
+      <span>NEW ARRIVALS</span><span>•</span>
+      <span>FREE SHIPPING OVER ₹2999</span><span>•</span>
+      <span>SS2026 COLLECTION LIVE</span><span>•</span>
+      <span>HYPER REWARDS PROGRAM</span><span>•</span>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <section class="section">
+    <p class="section-label">Shop by Category</p>
+    <h2 class="section-title">FIND YOUR<br>AESTHETIC</h2>
+    <div class="categories-grid">
+      <div class="cat-card">
+        <a href="products.html" class="cat-link">
+          <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80" alt="Womenswear"/>
+          <div class="cat-overlay"><span class="cat-name">Womenswear</span></div>
+        </a>
+      </div>
+      <div class="cat-card">
+        <a href="products.html" class="cat-link">
+          <img src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=600&q=80" alt="Menswear"/>
+          <div class="cat-overlay"><span class="cat-name">Menswear</span></div>
+        </a>
+      </div>
+      <div class="cat-card">
+        <a href="products.html" class="cat-link">
+          <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&q=80" alt="Footwear"/>
+          <div class="cat-overlay"><span class="cat-name">Footwear</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="section" style="padding-top:0">
+    <p class="section-label">Bestsellers</p>
+    <h2 class="section-title">HOT RIGHT<br>NOW</h2>
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="badge">NEW</div>
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80" alt="Aura Coat"/>
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Outerwear</p>
+          <p class="product-name">Aura Oversized Coat</p>
+          <p class="product-price"><strong>₹8,999</strong> &nbsp;<s style="font-size:0.8rem">₹12,000</s></p>
+        </div>
+        <button class="add-btn">+</button>
+      </div>
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=500&q=80" alt="Noir Dress"/>
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Dresses</p>
+          <p class="product-name">Noir Slip Dress</p>
+          <p class="product-price"><strong>₹4,499</strong></p>
+        </div>
+        <button class="add-btn">+</button>
+      </div>
+      <div class="product-card">
+        <div class="badge">HOT</div>
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=500&q=80" alt="Edge Jacket"/>
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Jackets</p>
+          <p class="product-name">Edge Moto Jacket</p>
+          <p class="product-price"><strong>₹6,299</strong></p>
+        </div>
+        <button class="add-btn">+</button>
+      </div>
+      <div class="product-card">
+        <div class="product-img">
+          <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=500&q=80" alt="Flux Blazer"/>
+        </div>
+        <div class="product-info">
+          <p class="product-tag">Tailoring</p>
+          <p class="product-name">Flux Power Blazer</p>
+          <p class="product-price"><strong>₹7,199</strong></p>
+        </div>
+        <button class="add-btn">+</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAND STORY -->
+  <section class="brand-story">
+    <div class="brand-img">
+      <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=900&q=80" alt="Brand Story"/>
+    </div>
+    <div class="brand-text">
+      <p class="section-label">About Hyper</p>
+      <blockquote class="brand-quote">"Fashion is the armor to survive everyday life."</blockquote>
+      <p class="brand-desc">Born in 2018, Hyper was built on the idea that clothing should be an act of defiance — against the ordinary, the expected, the forgettable. Our designs fuse street edge with couture precision, built for individuals who don't just follow trends, they set them.</p>
+      <br/><br/>
+      <a href="contact.html" class="btn-ghost" style="display:inline-block; margin-top:12px">Learn More</a>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <p class="section-label" style="color:rgba(10,10,10,0.5)">Stay Connected</p>
+    <h2 class="section-title">JOIN THE<br>MOVEMENT</h2>
+    <p>Get early access to drops, exclusive offers & style dispatches.</p>
+    <form class="nl-form" onsubmit="return false;">
+      <input type="email" placeholder="Enter your email address"/>
+      <button type="submit">Subscribe</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">HYPER</div>
+        <p class="footer-desc">Fashion that moves with you. New drops every season. Designed for the bold, the restless, the fearless.</p>
+      </div>
+      <div>
+        <p class="footer-heading">Shop</p>
+        <ul class="footer-links">
+          <li><a href="products.html">New Arrivals</a></li>
+          <li><a href="products.html">Women</a></li>
+          <li><a href="products.html">Men</a></li>
+          <li><a href="products.html">Accessories</a></li>
+          <li><a href="products.html">Sale</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-heading">Help</p>
+        <ul class="footer-links">
+          <li><a href="#">Sizing Guide</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">Shipping Info</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-heading">Legal</p>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Hyper Fashion. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+        <a href="#">Pinterest</a>
+        <a href="#">Twitter</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      setTimeout(() => {
+        ring.style.left = e.clientX + 'px';
+        ring.style.top = e.clientY + 'px';
+      }, 80);
+    });
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+  </script>
+</body>
+</html>
