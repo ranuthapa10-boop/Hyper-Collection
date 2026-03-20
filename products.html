@@ -1,1 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Collection — HYPER Fashion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a; --white: #f5f3ee; --accent: #c8a96e;
+      --accent2: #e74c3c; --gray: #1a1a1a; --mid: #2a2a2a; --light-gray: #888;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; cursor: none; }
+    .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+    .cursor-ring { width: 36px; height: 36px; border: 1px solid var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); opacity: 0.6; transition: all 0.15s; }
 
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 60px; background: rgba(10,10,10,0.97);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a { color: var(--white); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta { background: var(--accent); color: var(--black); padding: 10px 24px; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; text-decoration: none; }
+
+    /* PAGE HERO */
+    .page-hero {
+      height: 45vh; position: relative;
+      display: flex; align-items: flex-end; padding: 60px;
+      margin-top: 80px; overflow: hidden;
+    }
+    .page-hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1600&q=80') center/cover;
+    }
+    .page-hero-overlay { position: absolute; inset: 0; background: rgba(10,10,10,0.65); }
+    .page-hero h1 {
+      position: relative; z-index: 2;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 8vw, 7rem);
+      letter-spacing: 0.05em;
+    }
+    .page-hero span { color: var(--accent); font-style: italic; font-family: 'Playfair Display', serif; }
+
+    /* FILTER BAR */
+    .filter-bar {
+      padding: 30px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--mid);
+      position: sticky; top: 80px; z-index: 100;
+      background: var(--black);
+    }
+    .filter-tabs { display: flex; gap: 6px; }
+    .filter-tab {
+      padding: 8px 20px; font-size: 0.75rem; letter-spacing: 0.15em;
+      text-transform: uppercase; border: 1px solid var(--mid);
+      background: none; color: var(--light-gray); cursor: none;
+      transition: all 0.2s;
+    }
+    .filter-tab:hover, .filter-tab.active { border-color: var(--accent); color: var(--accent); }
+    .sort-select {
+      background: var(--gray); color: var(--white); border: 1px solid var(--mid);
+      padding: 8px 16px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; outline: none; cursor: none;
+    }
+    .results-count { font-size: 0.8rem; color: var(--light-gray); }
+
+    /* PRODUCTS GRID */
+    .shop-grid {
+      padding: 60px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+    }
+    .product-card {
+      position: relative; overflow: hidden; background: var(--gray); cursor: none;
+    }
+    .product-img { aspect-ratio: 3/4; overflow: hidden; }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .product-card:hover .product-img img { transform: scale(1.06); }
+    .product-info { padding: 20px 20px 64px; }
+    .product-tag { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .product-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 6px; }
+    .product-desc { font-size: 0.8rem; color: var(--light-gray); line-height: 1.5; margin-bottom: 12px; }
+    .product-price { font-size: 0.9rem; }
+    .product-price strong { color: var(--white); font-size: 1rem; }
+    .product-price s { color: var(--light-gray); font-size: 0.8rem; margin-left: 8px; }
+    .card-actions {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; gap: 0;
+    }
+    .btn-cart {
+      flex: 1; padding: 14px; background: var(--accent); color: var(--black);
+      border: none; font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 700; cursor: none; transition: background 0.3s;
+    }
+    .btn-cart:hover { background: var(--white); }
+    .btn-wish {
+      width: 50px; background: var(--mid); border: none;
+      color: var(--white); font-size: 1.1rem; cursor: none;
+      transition: background 0.3s;
+    }
+    .btn-wish:hover { background: var(--accent2); }
+    .badge-new, .badge-hot, .badge-sale {
+      position: absolute; top: 14px; left: 14px;
+      font-size: 0.6rem; letter-spacing: 0.2em; font-weight: 700;
+      padding: 5px 10px; text-transform: uppercase;
+    }
+    .badge-new { background: var(--black); color: var(--accent); border: 1px solid var(--accent); }
+    .badge-hot { background: var(--accent2); color: white; }
+    .badge-sale { background: var(--accent); color: var(--black); }
+
+    /* SIZES */
+    .size-row { display: flex; gap: 6px; margin-bottom: 14px; }
+    .size-pill {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--mid); font-size: 0.7rem; color: var(--light-gray);
+      cursor: none; transition: all 0.2s;
+    }
+    .size-pill:hover { border-color: var(--accent); color: var(--accent); }
+    .size-pill.active { background: var(--accent); color: var(--black); border-color: var(--accent); }
+
+    /* LOAD MORE */
+    .load-more-wrap { text-align: center; padding: 60px; }
+    .load-more {
+      background: none; border: 1px solid var(--accent); color: var(--accent);
+      padding: 16px 60px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: none; transition: all 0.3s;
+    }
+    .load-more:hover { background: var(--accent); color: var(--black); }
+
+    footer { background: #050505; padding: 40px 60px; text-align: center; border-top: 1px solid var(--mid); }
+    footer p { color: var(--light-gray); font-size: 0.85rem; }
+    footer a { color: var(--accent); text-decoration: none; margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">HYPER</a>
+    <ul class="nav-links">
+      <li><a href="products.html" style="color:var(--accent)">Collection</a></li>
+      <li><a href="checkout.html">Cart</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="checkout.html" class="nav-cta">Cart (3)</a>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <h1>SS2026 <span>Collection</span></h1>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="filterProducts('all',this)">All</button>
+      <button class="filter-tab" onclick="filterProducts('women',this)">Women</button>
+      <button class="filter-tab" onclick="filterProducts('men',this)">Men</button>
+      <button class="filter-tab" onclick="filterProducts('accessories',this)">Accessories</button>
+      <button class="filter-tab" onclick="filterProducts('sale',this)">Sale</button>
+    </div>
+    <span class="results-count" id="count">12 Products</span>
+    <select class="sort-select">
+      <option>Sort: Featured</option>
+      <option>Price: Low to High</option>
+      <option>Price: High to Low</option>
+      <option>Newest First</option>
+    </select>
+  </div>
+
+  <div class="shop-grid" id="shopGrid">
+
+    <div class="product-card" data-cat="women">
+      <span class="badge-new">New</span>
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80" alt="Aura Coat"/></div>
+      <div class="product-info">
+        <p class="product-tag">Outerwear · Women</p>
+        <p class="product-name">Aura Oversized Coat</p>
+        <p class="product-desc">Premium wool blend with dramatic silhouette. A statement piece for every season.</p>
+        <div class="size-row">
+          <div class="size-pill active">XS</div><div class="size-pill">S</div>
+          <div class="size-pill">M</div><div class="size-pill">L</div>
+        </div>
+        <p class="product-price"><strong>₹8,999</strong><s>₹12,000</s></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Aura Oversized Coat','₹8,999')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="women">
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&q=80" alt="Noir Dress"/></div>
+      <div class="product-info">
+        <p class="product-tag">Dresses · Women</p>
+        <p class="product-name">Noir Slip Dress</p>
+        <p class="product-desc">Effortless satin-finish slip in midnight noir. Wear day to night seamlessly.</p>
+        <div class="size-row">
+          <div class="size-pill">XS</div><div class="size-pill active">S</div>
+          <div class="size-pill">M</div><div class="size-pill">L</div>
+        </div>
+        <p class="product-price"><strong>₹4,499</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Noir Slip Dress','₹4,499')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="men">
+      <span class="badge-hot">Hot</span>
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=600&q=80" alt="Edge Jacket"/></div>
+      <div class="product-info">
+        <p class="product-tag">Jackets · Men</p>
+        <p class="product-name">Edge Moto Jacket</p>
+        <p class="product-desc">Italian-inspired leather jacket built for the city night. Raw seams, clean lines.</p>
+        <div class="size-row">
+          <div class="size-pill">S</div><div class="size-pill active">M</div>
+          <div class="size-pill">L</div><div class="size-pill">XL</div>
+        </div>
+        <p class="product-price"><strong>₹6,299</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Edge Moto Jacket','₹6,299')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="women">
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80" alt="Flux Blazer"/></div>
+      <div class="product-info">
+        <p class="product-tag">Tailoring · Women</p>
+        <p class="product-name">Flux Power Blazer</p>
+        <p class="product-desc">Sharp shoulders, clean lapels. Own the boardroom and the street.</p>
+        <div class="size-row">
+          <div class="size-pill">XS</div><div class="size-pill">S</div>
+          <div class="size-pill active">M</div><div class="size-pill">L</div>
+        </div>
+        <p class="product-price"><strong>₹7,199</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Flux Power Blazer','₹7,199')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="accessories">
+      <span class="badge-new">New</span>
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&q=80" alt="Phantom Sneakers"/></div>
+      <div class="product-info">
+        <p class="product-tag">Footwear · Unisex</p>
+        <p class="product-name">Phantom Lux Sneakers</p>
+        <p class="product-desc">Cloud-cushioned sole meets premium suede upper. The only sneaker you'll ever need.</p>
+        <div class="size-row">
+          <div class="size-pill">38</div><div class="size-pill active">40</div>
+          <div class="size-pill">42</div><div class="size-pill">44</div>
+        </div>
+        <p class="product-price"><strong>₹5,799</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Phantom Lux Sneakers','₹5,799')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="men">
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=600&q=80" alt="Void Trousers"/></div>
+      <div class="product-info">
+        <p class="product-tag">Trousers · Men</p>
+        <p class="product-name">Void Wide-Leg Trousers</p>
+        <p class="product-desc">Architectural cut with fluid drape. Elevated comfort from desk to dinner.</p>
+        <div class="size-row">
+          <div class="size-pill">28</div><div class="size-pill">30</div>
+          <div class="size-pill active">32</div><div class="size-pill">34</div>
+        </div>
+        <p class="product-price"><strong>₹3,999</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Void Wide-Leg Trousers','₹3,999')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="women">
+      <span class="badge-sale">Sale</span>
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80" alt="Haze Dress"/></div>
+      <div class="product-info">
+        <p class="product-tag">Dresses · Women</p>
+        <p class="product-name">Haze Maxi Dress</p>
+        <p class="product-desc">Flowy silhouette in sheer layered fabric. An ode to feminine power.</p>
+        <div class="size-row">
+          <div class="size-pill active">XS</div><div class="size-pill">S</div>
+          <div class="size-pill">M</div><div class="size-pill">L</div>
+        </div>
+        <p class="product-price"><strong>₹3,299</strong><s>₹5,500</s></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Haze Maxi Dress','₹3,299')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="accessories">
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80" alt="Storm Bag"/></div>
+      <div class="product-info">
+        <p class="product-tag">Bags · Accessories</p>
+        <p class="product-name">Storm Structured Bag</p>
+        <p class="product-desc">Architectural leather tote with matte hardware. Function meets form.</p>
+        <div class="size-row">
+          <div class="size-pill active">One Size</div>
+        </div>
+        <p class="product-price"><strong>₹9,499</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Storm Structured Bag','₹9,499')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="men">
+      <span class="badge-hot">Hot</span>
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80" alt="Stealth Hoodie"/></div>
+      <div class="product-info">
+        <p class="product-tag">Knitwear · Men</p>
+        <p class="product-name">Stealth Tech Hoodie</p>
+        <p class="product-desc">Water-resistant shell meets fleece lining. Built for the unpredictable.</p>
+        <div class="size-row">
+          <div class="size-pill">S</div><div class="size-pill">M</div>
+          <div class="size-pill active">L</div><div class="size-pill">XL</div>
+        </div>
+        <p class="product-price"><strong>₹4,299</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Stealth Tech Hoodie','₹4,299')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="sale">
+      <span class="badge-sale">60% Off</span>
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=600&q=80" alt="Glitch Shirt"/></div>
+      <div class="product-info">
+        <p class="product-tag">Tops · Unisex</p>
+        <p class="product-name">Glitch Oversized Shirt</p>
+        <p class="product-desc">Abstract print on premium cotton. Oversize cut for unrestricted movement.</p>
+        <div class="size-row">
+          <div class="size-pill">S</div><div class="size-pill active">M</div>
+          <div class="size-pill">L</div><div class="size-pill">XL</div>
+        </div>
+        <p class="product-price"><strong>₹1,599</strong><s>₹3,999</s></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Glitch Oversized Shirt','₹1,599')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="accessories">
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=600&q=80" alt="Eclipse Glasses"/></div>
+      <div class="product-info">
+        <p class="product-tag">Eyewear · Accessories</p>
+        <p class="product-name">Eclipse Sunglasses</p>
+        <p class="product-desc">Polarized shield lenses in matte titanium frame. UV400 protection.</p>
+        <div class="size-row">
+          <div class="size-pill active">One Size</div>
+        </div>
+        <p class="product-price"><strong>₹2,799</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Eclipse Sunglasses','₹2,799')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="women">
+      <span class="badge-new">New</span>
+      <div class="product-img"><img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80" alt="Silk Set"/></div>
+      <div class="product-info">
+        <p class="product-tag">Sets · Women</p>
+        <p class="product-name">Silk Co-ord Set</p>
+        <p class="product-desc">Coordinated luxe silk set with cropped top and high-waist trousers.</p>
+        <div class="size-row">
+          <div class="size-pill">XS</div><div class="size-pill active">S</div>
+          <div class="size-pill">M</div>
+        </div>
+        <p class="product-price"><strong>₹6,499</strong></p>
+      </div>
+      <div class="card-actions">
+        <button class="btn-cart" onclick="addToCart('Silk Co-ord Set','₹6,499')">Add to Cart</button>
+        <button class="btn-wish">♡</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="load-more-wrap">
+    <button class="load-more">Load More — 24 remaining</button>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:var(--black);padding:14px 32px;font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;z-index:9999;transition:transform 0.4s ease;opacity:0">
+    Added to cart ✓
+  </div>
+
+  <footer>
+    <p>© 2026 Hyper Fashion &nbsp;|&nbsp; <a href="index.html">Home</a> <a href="checkout.html">Cart</a> <a href="contact.html">Contact</a></p>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 80);
+    });
+    function filterProducts(cat, el) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      const cards = document.querySelectorAll('.product-card');
+      let count = 0;
+      cards.forEach(c => {
+        const show = cat === 'all' || c.dataset.cat === cat;
+        c.style.display = show ? 'block' : 'none';
+        if(show) count++;
+      });
+      document.getElementById('count').textContent = count + ' Products';
+    }
+    function addToCart(name, price) {
+      const t = document.getElementById('toast');
+      t.textContent = `${name} Added ✓`;
+      t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(100px)'; }, 2500);
+    }
+    document.querySelectorAll('.size-pill').forEach(p => {
+      p.addEventListener('click', function() {
+        this.closest('.size-row').querySelectorAll('.size-pill').forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
