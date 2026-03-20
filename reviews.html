@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reviews — HYPER Fashion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a; --white: #f5f3ee; --accent: #c8a96e;
+      --gray: #1a1a1a; --mid: #2a2a2a; --light-gray: #888;
+      --star: #f4c430;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; cursor: none; }
+    .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+    .cursor-ring { width: 36px; height: 36px; border: 1px solid var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); opacity: 0.6; transition: all 0.15s; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; background: rgba(10,10,10,0.97); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a { color: var(--white); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta { background: var(--accent); color: var(--black); padding: 10px 24px; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; text-decoration: none; }
+
+    /* PAGE HERO */
+    .page-hero {
+      height: 40vh; margin-top: 80px; position: relative;
+      display: flex; align-items: flex-end; padding: 60px;
+    }
+    .page-hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1600&q=80') center 30%/cover; }
+    .page-hero-overlay { position: absolute; inset: 0; background: rgba(10,10,10,0.7); }
+    .page-hero h1 { position: relative; z-index: 2; font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 7vw, 6rem); letter-spacing: 0.05em; }
+    .page-hero span { color: var(--accent); font-style: italic; font-family: 'Playfair Display', serif; }
+
+    .section { padding: 100px 60px; }
+
+    /* RATING OVERVIEW */
+    .rating-overview {
+      background: var(--gray);
+      padding: 60px;
+      display: grid; grid-template-columns: 280px 1fr; gap: 60px;
+      margin-bottom: 80px; align-items: center;
+    }
+    .overall-score { text-align: center; }
+    .big-score {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 7rem; color: var(--accent); line-height: 1;
+      margin-bottom: 8px;
+    }
+    .big-stars { font-size: 1.8rem; margin-bottom: 12px; }
+    .total-reviews { font-size: 0.85rem; color: var(--light-gray); }
+    .rating-bars { }
+    .bar-row {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
+    }
+    .bar-label { font-size: 0.8rem; color: var(--light-gray); width: 50px; }
+    .bar-bg { flex: 1; height: 6px; background: var(--mid); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 1s ease; }
+    .bar-count { font-size: 0.75rem; color: var(--light-gray); width: 40px; text-align: right; }
+    .cat-ratings { display: flex; gap: 40px; margin-top: 28px; flex-wrap: wrap; }
+    .cat-rating { text-align: center; }
+    .cat-rating .score { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--white); }
+    .cat-rating .stars { font-size: 0.8rem; color: var(--star); }
+    .cat-rating .label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--light-gray); margin-top: 4px; }
+
+    /* REVIEWS GRID */
+    .reviews-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+      margin-bottom: 60px;
+    }
+    .review-card {
+      background: var(--gray); padding: 32px;
+      transition: transform 0.3s; cursor: none;
+    }
+    .review-card:hover { transform: translateY(-4px); }
+    .review-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .review-avatar {
+      width: 48px; height: 48px; border-radius: 50%; object-fit: cover;
+      border: 2px solid var(--mid);
+    }
+    .reviewer-name { font-weight: 500; font-size: 0.95rem; }
+    .review-date { font-size: 0.75rem; color: var(--light-gray); }
+    .review-stars { color: var(--star); font-size: 0.85rem; margin-bottom: 12px; }
+    .review-product { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .review-text { font-size: 0.9rem; line-height: 1.7; color: rgba(245,243,238,0.8); }
+    .review-img { width: 100%; height: 180px; object-fit: cover; margin-top: 16px; border-radius: 2px; }
+    .verified { font-size: 0.65rem; letter-spacing: 0.15em; color: #4caf50; text-transform: uppercase; margin-top: 14px; }
+    .review-helpful { display: flex; gap: 12px; margin-top: 16px; }
+    .helpful-btn { background: var(--mid); border: none; color: var(--light-gray); padding: 6px 14px; font-size: 0.7rem; cursor: none; transition: all 0.2s; }
+    .helpful-btn:hover { background: var(--accent); color: var(--black); }
+
+    /* WRITE REVIEW FORM */
+    .write-review { background: var(--gray); padding: 60px; margin-top: 80px; }
+    .form-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .form-subtitle { color: var(--light-gray); margin-bottom: 48px; }
+    .star-rating { display: flex; gap: 8px; margin-bottom: 24px; }
+    .star-btn { font-size: 2rem; background: none; border: none; color: var(--mid); cursor: none; transition: color 0.2s; }
+    .star-btn:hover, .star-btn.lit { color: var(--star); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--light-gray); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: var(--mid); border: 1px solid #333; color: var(--white);
+      padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { resize: vertical; min-height: 140px; }
+    .photo-upload {
+      border: 2px dashed var(--mid); padding: 32px; text-align: center;
+      color: var(--light-gray); cursor: none; transition: border-color 0.3s; margin-bottom: 16px;
+    }
+    .photo-upload:hover { border-color: var(--accent); color: var(--accent); }
+    .photo-upload .icon { font-size: 2rem; margin-bottom: 8px; }
+    .photo-upload p { font-size: 0.8rem; }
+    .rating-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .rating-cat { }
+    .rating-cat label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--light-gray); display: block; margin-bottom: 6px; }
+    .mini-stars { display: flex; gap: 4px; }
+    .mini-star { font-size: 1.2rem; color: var(--mid); cursor: none; transition: color 0.2s; }
+    .mini-star:hover, .mini-star.lit { color: var(--star); }
+    .submit-btn {
+      background: var(--accent); color: var(--black); padding: 16px 48px;
+      border: none; font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 700; cursor: none; transition: all 0.3s; margin-top: 8px;
+    }
+    .submit-btn:hover { background: var(--white); }
+
+    /* SUCCESS STATE */
+    .review-success {
+      display: none; text-align: center; padding: 60px 40px;
+      animation: fadeIn 0.5s ease;
+    }
+    .review-success .icon { font-size: 3rem; margin-bottom: 16px; }
+    .review-success h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--accent); }
+    .review-success p { color: var(--light-gray); margin-top: 12px; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+    footer { background: #050505; padding: 40px 60px; text-align: center; border-top: 1px solid var(--mid); }
+    footer p { color: var(--light-gray); font-size: 0.85rem; }
+    footer a { color: var(--accent); text-decoration: none; margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">HYPER</a>
+    <ul class="nav-links">
+      <li><a href="products.html">Collection</a></li>
+      <li><a href="checkout.html">Cart</a></li>
+      <li><a href="reviews.html" style="color:var(--accent)">Reviews</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="products.html" class="nav-cta">Shop Now</a>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <h1>Customer <span>Reviews</span></h1>
+  </div>
+
+  <section class="section">
+    <!-- RATING OVERVIEW -->
+    <div class="rating-overview">
+      <div class="overall-score">
+        <div class="big-score">4.8</div>
+        <div class="big-stars">★★★★★</div>
+        <p class="total-reviews">Based on 2,847 reviews</p>
+        <div class="cat-ratings">
+          <div class="cat-rating"><div class="score">4.9</div><div class="stars">★★★★★</div><div class="label">Quality</div></div>
+          <div class="cat-rating"><div class="score">4.7</div><div class="stars">★★★★☆</div><div class="label">Fit</div></div>
+          <div class="cat-rating"><div class="score">4.8</div><div class="stars">★★★★★</div><div class="label">Value</div></div>
+        </div>
+      </div>
+      <div class="rating-bars">
+        <div class="bar-row"><span class="bar-label">5 ★</span><div class="bar-bg"><div class="bar-fill" style="width:78%"></div></div><span class="bar-count">2,220</span></div>
+        <div class="bar-row"><span class="bar-label">4 ★</span><div class="bar-bg"><div class="bar-fill" style="width:14%"></div></div><span class="bar-count">398</span></div>
+        <div class="bar-row"><span class="bar-label">3 ★</span><div class="bar-bg"><div class="bar-fill" style="width:5%"></div></div><span class="bar-count">142</span></div>
+        <div class="bar-row"><span class="bar-label">2 ★</span><div class="bar-bg"><div class="bar-fill" style="width:2%"></div></div><span class="bar-count">57</span></div>
+        <div class="bar-row"><span class="bar-label">1 ★</span><div class="bar-bg"><div class="bar-fill" style="width:1%"></div></div><span class="bar-count">30</span></div>
+      </div>
+    </div>
+
+    <!-- REVIEWS GRID -->
+    <div class="reviews-grid" id="reviewsGrid">
+
+      <div class="review-card">
+        <div class="review-header">
+          <img class="review-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" alt="Priya"/>
+          <div><p class="reviewer-name">Priya Sharma</p><p class="review-date">March 12, 2026</p></div>
+        </div>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-product">Aura Oversized Coat</p>
+        <p class="review-text">Absolutely obsessed with this coat! The quality is exceptional — heavy fabric that drapes beautifully. Got so many compliments on my first wear. Sizing runs true, ordered M and it fits perfectly oversized as intended.</p>
+        <p class="verified">✓ Verified Purchase</p>
+        <div class="review-helpful"><button class="helpful-btn">👍 Helpful (24)</button><button class="helpful-btn">Share</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <img class="review-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="Arjun"/>
+          <div><p class="reviewer-name">Arjun Mehta</p><p class="review-date">February 28, 2026</p></div>
+        </div>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-product">Edge Moto Jacket</p>
+        <p class="review-text">This jacket is everything. Premium leather feel, perfect cut, and it arrived faster than expected. The stitching is immaculate. Worth every rupee — I've already ordered another color. Hyper never disappoints.</p>
+        <img class="review-img" src="https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=500&q=70" alt="Review photo"/>
+        <p class="verified">✓ Verified Purchase</p>
+        <div class="review-helpful"><button class="helpful-btn">👍 Helpful (18)</button><button class="helpful-btn">Share</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <img class="review-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80" alt="Zara"/>
+          <div><p class="reviewer-name">Zara Khan</p><p class="review-date">March 1, 2026</p></div>
+        </div>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-product">Noir Slip Dress</p>
+        <p class="review-text">The most versatile piece in my wardrobe now. Goes from casual brunch to dinner seamlessly. The satin finish is gorgeous and the length is perfect. Highly recommend the S if you're between sizes.</p>
+        <p class="verified">✓ Verified Purchase</p>
+        <div class="review-helpful"><button class="helpful-btn">👍 Helpful (31)</button><button class="helpful-btn">Share</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <img class="review-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80" alt="Ravi"/>
+          <div><p class="reviewer-name">Ravi Pillai</p><p class="review-date">January 14, 2026</p></div>
+        </div>
+        <p class="review-stars">★★★★☆</p>
+        <p class="review-product">Void Wide-Leg Trousers</p>
+        <p class="review-text">Great trousers with an amazing fit. The drape is elegant. Only minor feedback — the waistband could be slightly more flexible. But the look is absolutely worth it and I get compliments constantly.</p>
+        <p class="verified">✓ Verified Purchase</p>
+        <div class="review-helpful"><button class="helpful-btn">👍 Helpful (7)</button><button class="helpful-btn">Share</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <img class="review-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80" alt="Meera"/>
+          <div><p class="reviewer-name">Meera Nair</p><p class="review-date">March 5, 2026</p></div>
+        </div>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-product">Phantom Lux Sneakers</p>
+        <p class="review-text">Hands down the best sneakers I've ever owned. The cushioning is incredible — I was on my feet all day and felt zero fatigue. The suede quality is luxurious and they clean easily. 10/10 recommend!</p>
+        <img class="review-img" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&q=70" alt="Review photo"/>
+        <p class="verified">✓ Verified Purchase</p>
+        <div class="review-helpful"><button class="helpful-btn">👍 Helpful (43)</button><button class="helpful-btn">Share</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <img class="review-avatar" src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80" alt="Kiran"/>
+          <div><p class="reviewer-name">Kiran Desai</p><p class="review-date">February 20, 2026</p></div>
+        </div>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-product">Flux Power Blazer</p>
+        <p class="review-text">This blazer changed my wardrobe game. The structure is phenomenal, the shoulder padding is perfect, and the fabric is premium. I've worn it to interviews, dinners, and even casual outings. Truly a 5-star piece.</p>
+        <p class="verified">✓ Verified Purchase</p>
+        <div class="review-helpful"><button class="helpful-btn">👍 Helpful (15)</button><button class="helpful-btn">Share</button></div>
+      </div>
+
+    </div>
+
+    <!-- WRITE A REVIEW FORM -->
+    <div class="write-review" id="writeReview">
+      <h2 class="form-title">WRITE A REVIEW</h2>
+      <p class="form-subtitle">Share your Hyper experience with the community</p>
+
+      <div id="reviewForm">
+        <div style="margin-bottom:28px">
+          <p style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--light-gray);margin-bottom:12px">Overall Rating</p>
+          <div class="star-rating" id="mainStars">
+            <button class="star-btn" onclick="setStars(1)">★</button>
+            <button class="star-btn" onclick="setStars(2)">★</button>
+            <button class="star-btn" onclick="setStars(3)">★</button>
+            <button class="star-btn" onclick="setStars(4)">★</button>
+            <button class="star-btn" onclick="setStars(5)">★</button>
+          </div>
+        </div>
+
+        <div class="rating-cats">
+          <div class="rating-cat">
+            <label>Quality</label>
+            <div class="mini-stars" data-cat="quality">
+              <span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span>
+            </div>
+          </div>
+          <div class="rating-cat">
+            <label>Fit & Sizing</label>
+            <div class="mini-stars">
+              <span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span>
+            </div>
+          </div>
+          <div class="rating-cat">
+            <label>Value for Money</label>
+            <div class="mini-stars">
+              <span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span>
+            </div>
+          </div>
+          <div class="rating-cat">
+            <label>Delivery</label>
+            <div class="mini-stars">
+              <span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span><span class="mini-star" onclick="setMini(this)">★</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Your Name</label><input type="text" placeholder="Priya Sharma" id="rName"/></div>
+          <div class="form-group"><label>Email (private)</label><input type="email" placeholder="priya@example.com" id="rEmail"/></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Product Reviewed</label>
+            <select id="rProduct">
+              <option>Select a product...</option>
+              <option>Aura Oversized Coat</option><option>Noir Slip Dress</option>
+              <option>Edge Moto Jacket</option><option>Flux Power Blazer</option>
+              <option>Phantom Lux Sneakers</option><option>Void Wide-Leg Trousers</option>
+              <option>Haze Maxi Dress</option><option>Storm Structured Bag</option>
+              <option>Stealth Tech Hoodie</option><option>Silk Co-ord Set</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group"><label>Review Title</label><input type="text" placeholder="Summarize your experience in one line" id="rTitle"/></div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group"><label>Your Review</label><textarea placeholder="Tell others about your experience — quality, fit, styling tips, delivery..." id="rBody"></textarea></div>
+        </div>
+        <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+          <div class="icon">📷</div>
+          <p>Click to upload photos (optional, max 4 photos)</p>
+          <input type="file" id="photoInput" accept="image/*" multiple style="display:none"/>
+        </div>
+        <label style="display:flex;align-items:center;gap:12px;font-size:0.85rem;color:var(--light-gray);cursor:none;margin-bottom:24px">
+          <input type="checkbox" style="accent-color:var(--accent)" checked/> I agree that my review may be published on the Hyper website
+        </label>
+        <button class="submit-btn" onclick="submitReview()">Submit Review →</button>
+      </div>
+
+      <div class="review-success" id="reviewSuccess">
+        <div class="icon">✨</div>
+        <h3>REVIEW SUBMITTED!</h3>
+        <p>Thank you for sharing your experience. Your review will appear after verification — usually within 24 hours.</p>
+        <br/>
+        <a href="products.html" style="color:var(--accent);text-decoration:none;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase">← Continue Shopping</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Hyper Fashion &nbsp;|&nbsp; <a href="index.html">Home</a> <a href="products.html">Shop</a> <a href="contact.html">Contact</a></p>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 80);
+    });
+    let selectedStars = 0;
+    function setStars(n) {
+      selectedStars = n;
+      document.querySelectorAll('#mainStars .star-btn').forEach((btn, i) => {
+        btn.classList.toggle('lit', i < n);
+      });
+    }
+    function setMini(el) {
+      const row = el.parentElement;
+      const stars = row.querySelectorAll('.mini-star');
+      const idx = Array.from(stars).indexOf(el);
+      stars.forEach((s, i) => s.classList.toggle('lit', i <= idx));
+    }
+    function submitReview() {
+      const name = document.getElementById('rName').value;
+      const body = document.getElementById('rBody').value;
+      if (!name || !body || !selectedStars) {
+        alert('Please fill in your name, rating, and review.');
+        return;
+      }
+      document.getElementById('reviewForm').style.display = 'none';
+      document.getElementById('reviewSuccess').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
